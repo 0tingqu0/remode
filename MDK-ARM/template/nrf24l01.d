@@ -30,7 +30,10 @@ template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.
 template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 template\nrf24l01.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 template\nrf24l01.o: ../Core/Inc/gpio.h
 template\nrf24l01.o: ../Core/Inc/spi.h
 template\nrf24l01.o: ../Core/Inc/usart.h
+template\nrf24l01.o: F:\KEIL\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

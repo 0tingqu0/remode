@@ -12,6 +12,8 @@
 #include "gpio.h"
 #include "spi.h"
 #include "usart.h"
+#include <string.h>
+
 /** 配置和选项定义 */
 #define DYNAMIC_PACKET      1       //1:动态数据包, 0:固定
 #define FIXED_PACKET_LEN    32      //包长度
@@ -179,32 +181,73 @@ typedef enum PowerType
 #define EN_DYN_ACK      0
 #define IRQ_ALL  ( (1<<RX_DR) | (1<<TX_DS) | (1<<MAX_RT) )
 
+uint8_t drv_spi_read_write_byte(uint8_t TxByte);
+HAL_StatusTypeDef drv_spi_read_write_buffer_dma(uint8_t *tx_buf, uint8_t *rx_buf, uint16_t len);
+
 uint8_t NRF24L01_Read_Reg( uint8_t RegAddr );
+uint8_t NRF24L01_Read_Reg_DMA(uint8_t RegAddr);
+
 void NRF24L01_Read_Buf( uint8_t RegAddr, uint8_t *pBuf, uint8_t len );
+void NRF24L01_Read_Buf_DMA(uint8_t RegAddr, uint8_t *pBuf, uint8_t len);
+
 void NRF24L01_Write_Reg( uint8_t RegAddr, uint8_t Value );
+void NRF24L01_Write_Reg_DMA(uint8_t RegAddr, uint8_t Value);
+
 void NRF24L01_Write_Buf( uint8_t RegAddr, uint8_t *pBuf, uint8_t len );
+void NRF24L01_Write_Buf_DMA(uint8_t RegAddr, uint8_t *pBuf, uint8_t len);
+
 void NRF24L01_Flush_Tx_Fifo ( void );
+
 void NRF24L01_Flush_Rx_Fifo( void );
+
 void NRF24L01_Reuse_Tx_Payload( void );
+
 void NRF24L01_Nop( void );
+
 uint8_t NRF24L01_Read_Status_Register( void );
+
 uint8_t NRF24L01_Clear_IRQ_Flag( uint8_t IRQ_Source );
+
 uint8_t RF24L01_Read_IRQ_Status( void );
+
 uint8_t NRF24L01_Read_Top_Fifo_Width( void );
+
 uint8_t NRF24L01_Read_Rx_Payload( uint8_t *pRxBuf );
+
 void NRF24L01_Write_Tx_Payload_Ack( uint8_t *pTxBuf, uint8_t len );
+
 void NRF24L01_Write_Tx_Payload_NoAck( uint8_t *pTxBuf, uint8_t len );
+
 void NRF24L01_Write_Tx_Payload_InAck( uint8_t *pData, uint8_t len );
+
 void NRF24L01_Set_TxAddr( uint8_t *pAddr, uint8_t len );
+void NRF24L01_Set_TxAddr_DMA(uint8_t *pAddr, uint8_t len);
+
 void NRF24L01_Set_RxAddr( uint8_t PipeNum, uint8_t *pAddr, uint8_t Len );
+void NRF24L01_Set_RxAddr_DMA(uint8_t PipeNum, uint8_t *pAddr, uint8_t Len);
+
 void NRF24L01_Set_Speed( nRf24l01SpeedType Speed );
+
 void NRF24L01_Set_Power( nRf24l01PowerType Power );
+
 void RF24LL01_Write_Hopping_Point( uint8_t FreqPoint );
+
 void RF24L01_Set_Mode( nRf24l01ModeType Mode );
+void RF24L01_Set_Mode_DMA(nRf24l01ModeType Mode);
+
 void  NRF24L01_check( void );
-uint8_t NRF24L01_TxPacket( uint8_t *txbuf, uint8_t Length );
+uint8_t NRF24L01_check_DMA(void);
+
+uint8_t NRF24L01_TxPacket(uint8_t *txbuf, uint8_t Length);
+uint8_t NRF24L01_TxPacket_DMA(uint8_t *txbuf, uint8_t Length);
+
 uint8_t NRF24L01_RxPacket( uint8_t *rxbuf );
+
+
 void NRF24L01_Gpio_Init( void );
+
 void RF24L01_Init( void );
+void RF24L01_Init_DMA(void);
+
 
 #endif /* INC_NRF24L01_H_ */

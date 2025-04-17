@@ -29,11 +29,14 @@ template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h
 template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 template\main.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h
 template\main.o: ../Core/Inc/adc.h
 template\main.o: ../Core/Inc/dma.h
 template\main.o: ../Core/Inc/i2c.h
 template\main.o: ../Core/Inc/spi.h
+template\main.o: ../Core/Inc/tim.h
 template\main.o: ../Core/Inc/usart.h
 template\main.o: ../Core/Inc/gpio.h
 template\main.o: ..\oled\Inc\oled.h

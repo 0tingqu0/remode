@@ -501,11 +501,6 @@
               <FilePath>..\Core\Src\usart.c</FilePath>
             </File>
             <File>
-              <FileName>syscalls.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\Src\syscalls.c</FilePath>
-            </File>
-            <File>
               <FileName>sysmem.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\Src\sysmem.c</FilePath>

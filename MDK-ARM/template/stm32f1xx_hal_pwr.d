@@ -28,4 +28,6 @@ template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_
 template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_i2c.h
 template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h
 template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h
+template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h
+template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h
 template\stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h

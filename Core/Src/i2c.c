@@ -23,7 +23,7 @@
 /* USER CODE BEGIN 0 */
 #include <stdlib.h>  // 提供 malloc/free 声明
 #include <string.h>  // 提供 memcpy 声明
-uint8_t i2c_tx_state=0;
+uint8_t i2c_tx_state = 0;
 
 /* USER CODE END 0 */
 
@@ -93,7 +93,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     hdma_i2c1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_i2c1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_i2c1_rx.Init.Mode = DMA_NORMAL;
-    hdma_i2c1_rx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_i2c1_rx.Init.Priority = DMA_PRIORITY_MEDIUM;
     if (HAL_DMA_Init(&hdma_i2c1_rx) != HAL_OK)
     {
       Error_Handler();
@@ -109,7 +109,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* i2cHandle)
     hdma_i2c1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
     hdma_i2c1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
     hdma_i2c1_tx.Init.Mode = DMA_NORMAL;
-    hdma_i2c1_tx.Init.Priority = DMA_PRIORITY_LOW;
+    hdma_i2c1_tx.Init.Priority = DMA_PRIORITY_MEDIUM;
     if (HAL_DMA_Init(&hdma_i2c1_tx) != HAL_OK)
     {
       Error_Handler();
@@ -172,12 +172,12 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
  */
 void HAL_I2C_WriteCommand(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t Control_bytes, uint8_t Command)
 {
-     uint8_t TxData[2] = { Control_bytes , Command }; // 将控制字节和命令值打包
+    uint8_t TxData[2] = { Control_bytes , Command }; // 将控制字节和命令值打包
 
-    HAL_I2C_Master_Transmit(&hi2c1 , DevAddress << 1 , TxData , 2 , HAL_MAX_DELAY);
+//    HAL_I2C_Master_Transmit(&hi2c1 , DevAddress << 1 , TxData , 2 , HAL_MAX_DELAY);
 //      HAL_I2C_Master_Transmit_IT(&hi2c1 , DevAddress << 1 , TxData , 2 );
-//    HAL_I2C_Master_Transmit_DMA(hi2c , DevAddress << 1 , TxData , 2 );
-
+    HAL_I2C_Master_Transmit_DMA(&hi2c1 , DevAddress << 1 , TxData , 2);
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 
 }
 
@@ -193,15 +193,15 @@ void HAL_I2C_WriteCommand(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t 
 void HAL_I2C_WriteData(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t Control_bytes, uint8_t *Data,
         uint8_t DataLength)
 {
-     uint8_t TxData[1 + DataLength]; // 创建缓冲区，包含控制字节和数据
+    uint8_t TxData[1 + DataLength]; // 创建缓冲区，包含控制字节和数据
     TxData[0] = Control_bytes;        // 第一个字节是控制字节
     for (uint8_t i = 0; i < DataLength; i++)
     {
         TxData[1 + i] = Data[i];    // 将数据复制到缓冲区
     }
-    HAL_I2C_Master_Transmit(&hi2c1, DevAddress << 1, TxData,  1 + DataLength, HAL_MAX_DELAY);
+//    HAL_I2C_Master_Transmit(&hi2c1, DevAddress << 1, TxData,  1 + DataLength, HAL_MAX_DELAY);
 //    HAL_I2C_Master_Transmit_IT(&hi2c1, DevAddress << 1, TxData,  1 + DataLength);
-//    HAL_I2C_Master_Transmit_DMA(hi2c , DevAddress << 1 , TxData , 1 + DataLength); // 发送数据
-
+    HAL_I2C_Master_Transmit_DMA(&hi2c1 , DevAddress << 1 , TxData , 1 + DataLength); // 发送数据
+    while (HAL_I2C_GetState(&hi2c1) != HAL_I2C_STATE_READY);
 }
 /* USER CODE END 1 */
