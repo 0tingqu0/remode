@@ -140,7 +140,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM1)
     {
-        timer_flag =1; // 设置2000ms标志
+        timer_flag = 1; // 设置2000ms标志
 
     }
 }
@@ -154,7 +154,7 @@ int main(void)
 {
 
     /* USER CODE BEGIN 1 */
- uint8_t i=0;
+    uint8_t i = 0;
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -209,7 +209,7 @@ int main(void)
     while (1)
     {
         HAL_ADC_Start_DMA(&hadc1 , (uint32_t*) adc_raw , ADC_CHANNELS);
-        if (timer_flag>=1)
+        if (timer_flag >= 1)
         {
             if (NRF24L01_TxPacket_DMA((uint8_t*) tx_buffer , strlen(tx_buffer)) == TX_OK)
             { // 发送成功处理
@@ -219,11 +219,12 @@ int main(void)
         }
         OLED_ShowString(0 , 0 , remode1 , 12 , 0);
         OLED_ShowString(64 , 0 , remode2 , 12 , 0);
-            if (clean>=15 && i==0)
-            {
-                OLED_Clear();
-                i=1;
-            }
+
+        if (clean >= 15 && i == 0)
+        {
+            OLED_Clear();
+            i = 1;
+        }
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
