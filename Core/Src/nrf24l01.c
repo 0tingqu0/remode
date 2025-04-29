@@ -882,7 +882,7 @@ uint8_t NRF24L01_TxPacket_DMA(uint8_t *txbuf, uint8_t Length)
     // 等待传输完成或超时
     while (RF24L01_GET_IRQ_STATUS() != 0)
     {
-        if (HAL_GetTick() - start_time > 500)  // 500ms超时
+        if (HAL_GetTick() - start_time > 100)  // 500ms超时
         {
             NRF24L01_Gpio_Init();
             RF24L01_Init_DMA();
