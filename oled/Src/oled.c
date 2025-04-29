@@ -16,6 +16,7 @@
 #define OLED_CMD        0x00
 #define OLED_DATA          0x40
 
+volatile uint32_t clean=0;
  uint8_t init_cmds[] = {
         0xAE, // 关闭显示
         0xD5, 0x80, // 设置显示时钟分频
@@ -242,6 +243,7 @@
              }
              j++;
      }
+     clean++;
  }
 
  /**

@@ -39,7 +39,7 @@
 /* USER CODE BEGIN PTD */
 
 #define ADC_CHANNELS     4     // 摇杆通道数
-#define DEADZONE_THRESHOLD 70
+#define DEADZONE_THRESHOLD 200
 #define FILTER_WINDOW 8
 
 uint16_t values[4];
@@ -61,6 +61,7 @@ volatile uint16_t adc_raw[ADC_CHANNELS];          // DMA原始数据
 volatile uint16_t filtered_values[ADC_CHANNELS];  // 滤波后数据
 volatile uint8_t timer_flag = 0;
 
+extern volatile uint32_t clean;
 typedef struct
 {
     uint16_t buffer[FILTER_WINDOW];
@@ -139,7 +140,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM1)
     {
-        timer_flag = 1; // 设置2000ms标志
+        timer_flag =1; // 设置2000ms标志
 
     }
 }
@@ -153,7 +154,7 @@ int main(void)
 {
 
     /* USER CODE BEGIN 1 */
-
+ uint8_t i=0;
     /* USER CODE END 1 */
 
     /* MCU Configuration--------------------------------------------------------*/
@@ -200,11 +201,7 @@ int main(void)
     while (NRF24L01_check_DMA() == 0)
         RF24L01_Init_DMA();
     RF24L01_Set_Mode_DMA(MODE_TX);        //发送模式
-    if (timer_flag)
-    {
-        timer_flag = 0; // 清除标志
-        OLED_Clear();
-    }
+
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -212,18 +209,21 @@ int main(void)
     while (1)
     {
         HAL_ADC_Start_DMA(&hadc1 , (uint32_t*) adc_raw , ADC_CHANNELS);
-        if (timer_flag>=1000)
+        if (timer_flag>=1)
         {
-
             if (NRF24L01_TxPacket_DMA((uint8_t*) tx_buffer , strlen(tx_buffer)) == TX_OK)
-            {
-                // 发送成功处理
+            { // 发送成功处理
                 timer_flag = 0; // 清除标志
+                HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
             }
         }
         OLED_ShowString(0 , 0 , remode1 , 12 , 0);
-        OLED_ShowString(0 , 1 , remode2 , 12 , 0);
-
+        OLED_ShowString(64 , 0 , remode2 , 12 , 0);
+            if (clean>=15 && i==0)
+            {
+                OLED_Clear();
+                i=1;
+            }
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
