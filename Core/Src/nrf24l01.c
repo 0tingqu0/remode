@@ -892,6 +892,7 @@ uint8_t NRF24L01_TxPacket_DMA(uint8_t *txbuf, uint8_t Length)
         HAL_Delay(1);
     }
 
+
     // 读取并清除状态
     l_Status = NRF24L01_Read_Reg_DMA(STATUS);
     NRF24L01_Write_Reg_DMA(STATUS, l_Status);

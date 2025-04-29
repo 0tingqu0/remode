@@ -198,7 +198,7 @@ int main(void)
     NRF24L01_Gpio_Init();
 
     //检测nRF24L01
-    while (NRF24L01_check_DMA() == 0)
+    while (NRF24L01_check_DMA() == 0);
         RF24L01_Init_DMA();
     RF24L01_Set_Mode_DMA(MODE_TX);        //发送模式
 
@@ -209,12 +209,15 @@ int main(void)
     while (1)
     {
         HAL_ADC_Start_DMA(&hadc1 , (uint32_t*) adc_raw , ADC_CHANNELS);
+
         if (timer_flag >= 1)
         {
             if (NRF24L01_TxPacket_DMA((uint8_t*) tx_buffer , strlen(tx_buffer)) == TX_OK)
             { // 发送成功处理
-                timer_flag = 0; // 清除标志
+
                 HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
+                timer_flag = 0; // 清除标志
+
             }
         }
         OLED_ShowString(0 , 0 , remode1 , 12 , 0);

@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  0001aba1  00000000  00000000  0002869c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001c7bf  00000000  00000000  0004323d  2**0
+ 17 .debug_line   0001c7c3  00000000  00000000  0004323d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000953f3  00000000  00000000  0005f9fc  2**0
+ 18 .debug_str    000953f3  00000000  00000000  0005fa00  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000f4def  2**0
+ 19 .comment      00000043  00000000  00000000  000f4df3  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00006338  00000000  00000000  000f4e34  2**2
+ 20 .debug_frame  00006338  00000000  00000000  000f4e38  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000005d  00000000  00000000  000fb16c  2**0
+ 21 .debug_line_str 0000005d  00000000  00000000  000fb170  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1428,7 +1428,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
  80009ae:	4293      	cmp	r3, r2
  80009b0:	d102      	bne.n	80009b8 <HAL_TIM_PeriodElapsedCallback+0x18>
     {
-        timer_flag =1; // 设置2000ms标志
+        timer_flag = 1; // 设置2000ms标志
  80009b2:	4b05      	ldr	r3, [pc, #20]	@ (80009c8 <HAL_TIM_PeriodElapsedCallback+0x28>)
  80009b4:	2201      	movs	r2, #1
  80009b6:	701a      	strb	r2, [r3, #0]
@@ -1456,7 +1456,7 @@ int main(void)
  80009d0:	af02      	add	r7, sp, #8
 
     /* USER CODE BEGIN 1 */
- uint8_t i=0;
+    uint8_t i = 0;
  80009d2:	2300      	movs	r3, #0
  80009d4:	71fb      	strb	r3, [r7, #7]
     /* USER CODE END 1 */
@@ -1542,15 +1542,14 @@ int main(void)
  8000a48:	f000 fb8a 	bl	8001160 <NRF24L01_Gpio_Init>
 
     //检测nRF24L01
-    while (NRF24L01_check_DMA() == 0)
- 8000a4c:	e001      	b.n	8000a52 <main+0x86>
+    while (NRF24L01_check_DMA() == 0);
+ 8000a4c:	bf00      	nop
+ 8000a4e:	f000 fa13 	bl	8000e78 <NRF24L01_check_DMA>
+ 8000a52:	4603      	mov	r3, r0
+ 8000a54:	2b00      	cmp	r3, #0
+ 8000a56:	d0fa      	beq.n	8000a4e <main+0x82>
         RF24L01_Init_DMA();
- 8000a4e:	f000 fba3 	bl	8001198 <RF24L01_Init_DMA>
-    while (NRF24L01_check_DMA() == 0)
- 8000a52:	f000 fa11 	bl	8000e78 <NRF24L01_check_DMA>
- 8000a56:	4603      	mov	r3, r0
- 8000a58:	2b00      	cmp	r3, #0
- 8000a5a:	d0f8      	beq.n	8000a4e <main+0x82>
+ 8000a58:	f000 fb9e 	bl	8001198 <RF24L01_Init_DMA>
     RF24L01_Set_Mode_DMA(MODE_TX);        //发送模式
  8000a5c:	2000      	movs	r0, #0
  8000a5e:	f000 faa7 	bl	8000fb0 <RF24L01_Set_Mode_DMA>
@@ -1564,7 +1563,8 @@ int main(void)
  8000a64:	4920      	ldr	r1, [pc, #128]	@ (8000ae8 <main+0x11c>)
  8000a66:	481e      	ldr	r0, [pc, #120]	@ (8000ae0 <main+0x114>)
  8000a68:	f001 f87a 	bl	8001b60 <HAL_ADC_Start_DMA>
-        if (timer_flag>=1)
+
+        if (timer_flag >= 1)
  8000a6c:	4b1f      	ldr	r3, [pc, #124]	@ (8000aec <main+0x120>)
  8000a6e:	781b      	ldrb	r3, [r3, #0]
  8000a70:	b2db      	uxtb	r3, r3
@@ -1583,14 +1583,16 @@ int main(void)
  8000a8a:	2b20      	cmp	r3, #32
  8000a8c:	d107      	bne.n	8000a9e <main+0xd2>
             { // 发送成功处理
-                timer_flag = 0; // 清除标志
- 8000a8e:	4b17      	ldr	r3, [pc, #92]	@ (8000aec <main+0x120>)
- 8000a90:	2200      	movs	r2, #0
- 8000a92:	701a      	strb	r2, [r3, #0]
+
                 HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
- 8000a94:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
- 8000a98:	4816      	ldr	r0, [pc, #88]	@ (8000af4 <main+0x128>)
- 8000a9a:	f002 fbad 	bl	80031f8 <HAL_GPIO_TogglePin>
+ 8000a8e:	f44f 5100 	mov.w	r1, #8192	@ 0x2000
+ 8000a92:	4818      	ldr	r0, [pc, #96]	@ (8000af4 <main+0x128>)
+ 8000a94:	f002 fbb0 	bl	80031f8 <HAL_GPIO_TogglePin>
+                timer_flag = 0; // 清除标志
+ 8000a98:	4b14      	ldr	r3, [pc, #80]	@ (8000aec <main+0x120>)
+ 8000a9a:	2200      	movs	r2, #0
+ 8000a9c:	701a      	strb	r2, [r3, #0]
+
             }
         }
         OLED_ShowString(0 , 0 , remode1 , 12 , 0);
@@ -1609,7 +1611,8 @@ int main(void)
  8000ab6:	2100      	movs	r1, #0
  8000ab8:	2040      	movs	r0, #64	@ 0x40
  8000aba:	f007 fb97 	bl	80081ec <OLED_ShowString>
-            if (clean>=15 && i==0)
+
+        if (clean >= 15 && i == 0)
  8000abe:	4b10      	ldr	r3, [pc, #64]	@ (8000b00 <main+0x134>)
  8000ac0:	681b      	ldr	r3, [r3, #0]
  8000ac2:	2b0e      	cmp	r3, #14
@@ -1617,10 +1620,10 @@ int main(void)
  8000ac6:	79fb      	ldrb	r3, [r7, #7]
  8000ac8:	2b00      	cmp	r3, #0
  8000aca:	d1ca      	bne.n	8000a62 <main+0x96>
-            {
-                OLED_Clear();
+        {
+            OLED_Clear();
  8000acc:	f007 fa8e 	bl	8007fec <OLED_Clear>
-                i=1;
+            i = 1;
  8000ad0:	2301      	movs	r3, #1
  8000ad2:	71fb      	strb	r3, [r7, #7]
         HAL_ADC_Start_DMA(&hadc1 , (uint32_t*) adc_raw , ADC_CHANNELS);
@@ -2637,6 +2640,7 @@ uint8_t NRF24L01_TxPacket_DMA(uint8_t *txbuf, uint8_t Length)
  800110e:	2b10      	cmp	r3, #16
  8001110:	d0e7      	beq.n	80010e2 <NRF24L01_TxPacket_DMA+0x82>
     }
+
 
     // 读取并清除状态
     l_Status = NRF24L01_Read_Reg_DMA(STATUS);
