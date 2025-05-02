@@ -1,0 +1,5 @@
+Load "template\\template.axf" 
+_____^
+*** error 56: cannot open file
+Error: Flash Download failed  -  Could not load file 'template\template.axf'
+Flash Load finished at 00:14:17
