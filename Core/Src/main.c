@@ -57,9 +57,12 @@ uint8_t g_TxMode = 0, g_UartRxFlag = 0;
 uint8_t g_UartRxBuffer[100] = { 0 };
 uint8_t g_RF24L01RxBuffer[32] = { 0 };
 uint8_t ADC_State = 0;
+uint8_t conversion = 0; // nrf24l01转换标志
+uint8_t TX_Errow = 0;
+
 volatile uint16_t adc_raw[ADC_CHANNELS];          // DMA原始数据
 volatile uint16_t filtered_values[ADC_CHANNELS];  // 滤波后数据
-volatile uint8_t timer_flag = 0;
+volatile uint8_t timerflag = 0;
 
 extern volatile uint32_t clean;
 typedef struct
@@ -126,8 +129,8 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
             i = 1;
         if (i == 1)
         {
-            snprintf(tx_buffer , MAX_MSG_LEN , "%d,%d,%d,%d" , filtered_values[0] , filtered_values[1] ,
-                    filtered_values[2] , filtered_values[3]);
+            snprintf(tx_buffer , MAX_MSG_LEN , "%d,%d,%d,%d," , filtered_values[0] , filtered_values[1] ,
+                    filtered_values[3] , filtered_values[2]);
 
             sprintf(remode1 , "%d,%d " , filtered_values[0] , filtered_values[1]);
             sprintf(remode2 , "%d,%d " , filtered_values[2] , filtered_values[3]);
@@ -140,8 +143,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM1)
     {
-        timer_flag = 1; // 设置2000ms标志
-
+        timerflag++; // 设置2000ms标志
     }
 }
 /* USER CODE END 0 */
@@ -199,7 +201,7 @@ int main(void)
 
     //检测nRF24L01
     while (NRF24L01_check_DMA() == 0);
-        RF24L01_Init_DMA();
+    RF24L01_Init_DMA();
     RF24L01_Set_Mode_DMA(MODE_TX);        //发送模式
 
     /* USER CODE END 2 */
@@ -209,25 +211,58 @@ int main(void)
     while (1)
     {
         HAL_ADC_Start_DMA(&hadc1 , (uint32_t*) adc_raw , ADC_CHANNELS);
-
-        if (timer_flag >= 1)
+        if (timerflag >= 1)
         {
-            if (NRF24L01_TxPacket_DMA((uint8_t*) tx_buffer , strlen(tx_buffer)) == TX_OK)
-            { // 发送成功处理
 
-                HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
-                timer_flag = 0; // 清除标志
+            if ((NRF24L01_TxPacket_DMA((uint8_t*) tx_buffer , strlen(tx_buffer)) == TX_OK))
+            {
+                // 发送成功处理
+//                HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
+                timerflag = 0; // 清除标志
 
             }
+            else
+            {
+                if (clean >= 18)
+                {
+                    TX_Errow++;
+                }
+                else
+                    TX_Errow = 0;
+                if (TX_Errow >= 2)
+                {
+                    HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
+                    TX_Errow = 0;
+                    conversion = 1;
+                }
+            }
+
+        }
+        if (clean >= 15 && conversion == 1)
+        {
+//            HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
+            memset(g_RF24L01RxBuffer , 0 , sizeof(g_RF24L01RxBuffer)); // 清空接收缓冲区
+            RF24L01_Set_Mode_DMA(MODE_RX);
+            while (0 == NRF24L01_RxPacket_DMA(g_RF24L01RxBuffer)); // 接收字节
+            OLED_ShowString(40 , 2 , g_RF24L01RxBuffer , 12 , 0);
+            memset(g_RF24L01RxBuffer , 0 , sizeof(g_RF24L01RxBuffer)); // 清空接收缓冲区
+            RF24L01_Set_Mode_DMA(MODE_TX); // 发送模式
+
+//            OLED_Clear();
+
+            conversion = 0;
         }
         OLED_ShowString(0 , 0 , remode1 , 12 , 0);
         OLED_ShowString(64 , 0 , remode2 , 12 , 0);
 
-        if (clean >= 15 && i == 0)
+        if (clean >= 15 && i == 0) //oled刷新15次后显示
         {
             OLED_Clear();
             i = 1;
+
+            HAL_GPIO_WritePin(GPIOC , GPIO_PIN_13 , 0);
         }
+
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

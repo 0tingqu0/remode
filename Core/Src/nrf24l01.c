@@ -19,7 +19,7 @@ const char *g_ErrorString = "RF24L01 is not find !...";
 uint8_t drv_spi_read_write_byte(uint8_t TxByte)
 {
     uint8_t rx_data;
-    HAL_SPI_TransmitReceive(&hspi1 , &TxByte , &rx_data , 1 , HAL_MAX_DELAY);
+    HAL_SPI_TransmitReceive(&hspi1, &TxByte, &rx_data, 1, HAL_MAX_DELAY);
 //    HAL_SPI_TransmitReceive_DMA(&hspi1, &TxByte, &rx_data, 1);
 //    while (HAL_SPI_GetState(&SPI1))!=HAL_SPI_STATE_READY);
     return rx_data;      //返回
@@ -40,7 +40,8 @@ uint8_t drv_spi_read_write_byte_dma(uint8_t TxByte)
     // 使用DMA进行SPI传输
     status = HAL_SPI_TransmitReceive_DMA(&hspi1, &TxByte, &rx_data, 1);
 
-    if(status != HAL_OK) {
+    if (status != HAL_OK)
+    {
         // 处理错误情况
         Error_Handler();
     }
@@ -54,9 +55,11 @@ uint8_t drv_spi_read_write_byte_dma(uint8_t TxByte)
 /*​
  * @brief SPI DMA方式读写缓冲区
  */
-HAL_StatusTypeDef drv_spi_read_write_buffer_dma(uint8_t *tx_buf, uint8_t *rx_buf, uint16_t len)
+HAL_StatusTypeDef drv_spi_read_write_buffer_dma(uint8_t *tx_buf,
+        uint8_t *rx_buf, uint16_t len)
 {
-    HAL_StatusTypeDef status = HAL_SPI_TransmitReceive_DMA(&hspi1, tx_buf, rx_buf, len);
+    HAL_StatusTypeDef status = HAL_SPI_TransmitReceive_DMA(&hspi1, tx_buf,
+            rx_buf, len);
     while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
     return status;
 }
@@ -91,8 +94,8 @@ uint8_t NRF24L01_Read_Reg(uint8_t RegAddr)
  */
 uint8_t NRF24L01_Read_Reg_DMA(uint8_t RegAddr)
 {
-    uint8_t tx_buf[2] = {NRF_READ_REG | RegAddr, 0xFF};  // 命令+空数据
-    uint8_t rx_buf[2] = {0};                            // 接收缓冲区
+    uint8_t tx_buf[2] = { NRF_READ_REG | RegAddr, 0xFF };  // 命令+空数据
+    uint8_t rx_buf[2] = { 0 };                            // 接收缓冲区
 
     RF24L01_SET_CS_LOW();          // 片选
 
@@ -185,7 +188,7 @@ void NRF24L01_Write_Reg(uint8_t RegAddr, uint8_t Value)
  */
 void NRF24L01_Write_Reg_DMA(uint8_t RegAddr, uint8_t Value)
 {
-    uint8_t tx_buf[2] = {NRF_WRITE_REG | RegAddr, Value};  // 命令+数据
+    uint8_t tx_buf[2] = { NRF_WRITE_REG | RegAddr, Value };  // 命令+数据
 
     RF24L01_SET_CS_LOW();      // 片选
 
@@ -339,10 +342,10 @@ uint8_t NRF24L01_Clear_IRQ_Flag(uint8_t IRQ_Source)
     IRQ_Source &= (1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT); // 保留有效中断位
     status = NRF24L01_Read_Status_Register();                  // 读取当前状态
 
-    HAL_GPIO_WritePin(GPIOB , GPIO_PIN_1 , GPIO_PIN_RESET); // 拉低CSN
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET); // 拉低CSN
     drv_spi_read_write_byte(NRF_WRITE_REG + STATUS);          // 发送写命令
     drv_spi_read_write_byte(status | IRQ_Source);             // 写1清中断标志[1]
-    HAL_GPIO_WritePin(GPIOB , GPIO_PIN_1 , GPIO_PIN_SET);   // 拉高CSN
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);   // 拉高CSN
 
     return NRF24L01_Read_Status_Register();                   // 返回新状态
 }
@@ -355,7 +358,8 @@ uint8_t NRF24L01_Clear_IRQ_Flag(uint8_t IRQ_Source)
  */
 uint8_t RF24L01_Read_IRQ_Status(void)
 {
-    return (NRF24L01_Read_Status_Register() & ((1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT)));   //返回中断状态
+    return (NRF24L01_Read_Status_Register()
+            & ((1 << RX_DR) | (1 << TX_DS) | (1 << MAX_RT)));   //返回中断状态
 }
 
 /**
@@ -489,7 +493,7 @@ void NRF24L01_Write_Tx_Payload_InAck(uint8_t *pData, uint8_t len)
 void NRF24L01_Set_TxAddr(uint8_t *pAddr, uint8_t len)
 {
     len = (len > 5) ? 5 : len;                    //地址不能大于5个字节
-    NRF24L01_Write_Buf( TX_ADDR , pAddr , len);  //写地址
+    NRF24L01_Write_Buf( TX_ADDR, pAddr, len);  //写地址
 }
 
 /*​
@@ -512,7 +516,6 @@ void NRF24L01_Set_TxAddr_DMA(uint8_t *pAddr, uint8_t len)
     RF24L01_SET_CS_HIGH();
 }
 
-
 /**
  * @brief :设置接收通道地址
  * @param :
@@ -527,7 +530,7 @@ void NRF24L01_Set_RxAddr(uint8_t PipeNum, uint8_t *pAddr, uint8_t Len)
     Len = (Len > 5) ? 5 : Len;
     PipeNum = (PipeNum > 5) ? 5 : PipeNum;        //通道不大于5 地址长度不大于5个字节
 
-    NRF24L01_Write_Buf( RX_ADDR_P0 + PipeNum , pAddr , Len); //写入地址
+    NRF24L01_Write_Buf( RX_ADDR_P0 + PipeNum, pAddr, Len); //写入地址
 }
 
 /*​
@@ -580,7 +583,7 @@ void NRF24L01_Set_Speed(nRf24l01SpeedType Speed)
         btmp |= (1 << 3);
     }
 
-    NRF24L01_Write_Reg( RF_SETUP , btmp);
+    NRF24L01_Write_Reg( RF_SETUP, btmp);
 }
 
 /**
@@ -612,7 +615,7 @@ void NRF24L01_Set_Power(nRf24l01PowerType Power)
         default:
             break;
     }
-    NRF24L01_Write_Reg( RF_SETUP , btmp);
+    NRF24L01_Write_Reg( RF_SETUP, btmp);
 }
 
 /**
@@ -624,7 +627,7 @@ void NRF24L01_Set_Power(nRf24l01PowerType Power)
  */
 void RF24LL01_Write_Hopping_Point(uint8_t FreqPoint)
 {
-    NRF24L01_Write_Reg( RF_CH , FreqPoint & 0x7F);
+    NRF24L01_Write_Reg( RF_CH, FreqPoint & 0x7F);
 }
 
 /**
@@ -636,13 +639,13 @@ void RF24LL01_Write_Hopping_Point(uint8_t FreqPoint)
 void NRF24L01_check(void)
 {
     uint8_t i;
-    uint8_t buf[5] = { 0XA5 , 0XA5 , 0XA5 , 0XA5 , 0XA5 };
+    uint8_t buf[5] = { 0XA5, 0XA5, 0XA5, 0XA5, 0XA5 };
     uint8_t read_buf[5] = { 0 };
 
     while (1)
     {
-        NRF24L01_Write_Buf( TX_ADDR , buf , 5);          //写入5个字节的地址
-        NRF24L01_Read_Buf( TX_ADDR , read_buf , 5);      //读出写入的地址
+        NRF24L01_Write_Buf( TX_ADDR, buf, 5);          //写入5个字节的地址
+        NRF24L01_Read_Buf( TX_ADDR, read_buf, 5);      //读出写入的地址
         for (i = 0; i < 5; i++)
         {
             if (buf[i] != read_buf[i])
@@ -657,8 +660,8 @@ void NRF24L01_check(void)
         }
         else
         {
-                HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-                HAL_Delay(100);
+            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+            HAL_Delay(100);
         }
     }
 }
@@ -672,19 +675,19 @@ void NRF24L01_check(void)
 uint8_t NRF24L01_check_DMA(void)
 {
     uint8_t i;
-    uint8_t buf[5] = {0xA5, 0xA5, 0xA5, 0xA5, 0xA5};
-    uint8_t read_buf[5] = {0};
+    uint8_t buf[5] = { 0xA5, 0xA5, 0xA5, 0xA5, 0xA5 };
     uint8_t tx_buf[6], rx_buf[6];
     uint32_t start_time = HAL_GetTick();
 
-    while(1) {
+    while (1)
+    {
         // 使用DMA写入地址
         tx_buf[0] = NRF_WRITE_REG | TX_ADDR;
         memcpy(&tx_buf[1], buf, 5);
 
         RF24L01_SET_CS_LOW();
         HAL_SPI_Transmit_DMA(&hspi1, tx_buf, 6);
-        while(HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
+        while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
         RF24L01_SET_CS_HIGH();
 
         // 使用DMA读取地址
@@ -693,22 +696,26 @@ uint8_t NRF24L01_check_DMA(void)
 
         RF24L01_SET_CS_LOW();
         HAL_SPI_TransmitReceive_DMA(&hspi1, tx_buf, rx_buf, 6);
-        while(HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
+        while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
         RF24L01_SET_CS_HIGH();
 
         // 比较结果
-        for(i = 0; i < 5; i++) {
-            if(buf[i] != rx_buf[i+1]) {
+        for (i = 0; i < 5; i++)
+        {
+            if (buf[i] != rx_buf[i + 1])
+            {
                 break;
             }
         }
 
-        if(i == 5) {
+        if (i == 5)
+        {
             return 1; // 检测成功
         }
 
         // 超时处理(5秒超时)
-        if(HAL_GetTick() - start_time > 5000) {
+        if (HAL_GetTick() - start_time > 5000)
+        {
             return 0; // 检测失败
         }
 
@@ -742,7 +749,7 @@ void RF24L01_Set_Mode(nRf24l01ModeType Mode)
         }
     }
 
-    NRF24L01_Write_Reg( CONFIG , controlreg);
+    NRF24L01_Write_Reg( CONFIG, controlreg);
 }
 
 /*​
@@ -762,16 +769,18 @@ void RF24L01_Set_Mode_DMA(nRf24l01ModeType Mode)
 
     RF24L01_SET_CS_LOW();
     HAL_SPI_TransmitReceive_DMA(&hspi1, tx_buf, rx_buf, 2);
-    while(HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
+    while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
     RF24L01_SET_CS_HIGH();
 
     uint8_t controlreg = rx_buf[1];
 
     // 修改模式位
-    if (Mode == MODE_TX) {
+    if (Mode == MODE_TX)
+    {
         controlreg &= ~(1 << PRIM_RX);
     }
-    else if (Mode == MODE_RX) {
+    else if (Mode == MODE_RX)
+    {
         controlreg |= (1 << PRIM_RX);
     }
 
@@ -781,7 +790,7 @@ void RF24L01_Set_Mode_DMA(nRf24l01ModeType Mode)
 
     RF24L01_SET_CS_LOW();
     HAL_SPI_Transmit_DMA(&hspi1, tx_buf, 2);
-    while(HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
+    while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
     RF24L01_SET_CS_HIGH();
 }
 
@@ -806,7 +815,7 @@ uint8_t NRF24L01_TxPacket(uint8_t *txbuf, uint8_t Length)
     RF24L01_SET_CS_HIGH();
 
     RF24L01_SET_CE_LOW();
-    NRF24L01_Write_Buf_DMA( WR_TX_PLOAD , txbuf , Length);   //写数据到TX BUF 32字节  TX_PLOAD_WIDTH
+    NRF24L01_Write_Buf_DMA( WR_TX_PLOAD, txbuf, Length); //写数据到TX BUF 32字节  TX_PLOAD_WIDTH
     RF24L01_SET_CE_HIGH();         //启动发送
 //    HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
     while (0 != RF24L01_GET_IRQ_STATUS())
@@ -823,11 +832,11 @@ uint8_t NRF24L01_TxPacket(uint8_t *txbuf, uint8_t Length)
     }
 //    HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
     l_Status = NRF24L01_Read_Reg(STATUS);                       //读状态寄存器
-    NRF24L01_Write_Reg( STATUS , l_Status);                     //清除TX_DS或MAX_RT中断标志
+    NRF24L01_Write_Reg( STATUS, l_Status);                  //清除TX_DS或MAX_RT中断标志
 //    HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
     if (l_Status & MAX_TX) //达到最大重发次数
     {
-        NRF24L01_Write_Reg( FLUSH_TX , 0xff);    //清除TX FIFO寄存器
+        NRF24L01_Write_Reg( FLUSH_TX, 0xff);    //清除TX FIFO寄存器
 //        HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
         return MAX_TX;
     }
@@ -882,7 +891,7 @@ uint8_t NRF24L01_TxPacket_DMA(uint8_t *txbuf, uint8_t Length)
     // 等待传输完成或超时
     while (RF24L01_GET_IRQ_STATUS() != 0)
     {
-        if (HAL_GetTick() - start_time > 100)  // 500ms超时
+        if (HAL_GetTick() - start_time >100)  // 500ms超时
         {
             NRF24L01_Gpio_Init();
             RF24L01_Init_DMA();
@@ -891,7 +900,6 @@ uint8_t NRF24L01_TxPacket_DMA(uint8_t *txbuf, uint8_t Length)
         }
         HAL_Delay(1);
     }
-
 
     // 读取并清除状态
     l_Status = NRF24L01_Read_Reg_DMA(STATUS);
@@ -939,18 +947,60 @@ uint8_t NRF24L01_RxPacket(uint8_t *rxbuf)
     }
 
     l_Status = NRF24L01_Read_Reg( STATUS);     //读状态寄存器
-    NRF24L01_Write_Reg( STATUS , l_Status);      //清中断标志
+    NRF24L01_Write_Reg( STATUS, l_Status);      //清中断标志
     if (l_Status & RX_OK)   //接收到数据
     {
         l_RxLength = NRF24L01_Read_Reg( R_RX_PL_WID);      //读取接收到的数据个数
-        NRF24L01_Read_Buf( RD_RX_PLOAD , rxbuf , l_RxLength);  //接收到数据
-        NRF24L01_Write_Reg( FLUSH_RX , 0xff);                //清除RX FIFO
+        NRF24L01_Read_Buf( RD_RX_PLOAD, rxbuf, l_RxLength);  //接收到数据
+        NRF24L01_Write_Reg( FLUSH_RX, 0xff);                //清除RX FIFO
         return l_RxLength;
     }
 
     return 0;               //没有收到数据
 }
 
+/**
+ * @brief :NRF24L01_DMA接收数据
+ * @param :
+ *         @rxbuf:接收数据存放地址
+ * @note  :无
+ * @retval:接收的数据个数
+ */
+uint8_t NRF24L01_RxPacket_DMA(uint8_t *rxbuf)
+{
+    uint8_t l_Status = 0;
+    uint32_t start_time = HAL_GetTick();
+    uint8_t l_RxLength = 0;
+
+    RF24L01_SET_CS_LOW();      //片选
+    drv_spi_read_write_byte_dma( FLUSH_RX);
+    RF24L01_SET_CS_HIGH();
+
+    // 等待传输完成或超时
+        while (RF24L01_GET_IRQ_STATUS() != 0)
+        {
+            if (HAL_GetTick() - start_time > 100)  // 500ms超时
+            {
+                NRF24L01_Gpio_Init();
+                RF24L01_Init_DMA();
+                RF24L01_Set_Mode_DMA(MODE_RX);
+                break;
+            }
+
+        }
+
+    l_Status = NRF24L01_Read_Reg_DMA( STATUS);     //读状态寄存器
+    NRF24L01_Write_Reg_DMA( STATUS, l_Status);      //清中断标志
+    if (l_Status & RX_OK)   //接收到数据
+    {
+        l_RxLength = NRF24L01_Read_Reg_DMA( R_RX_PL_WID);      //读取接收到的数据个数
+        NRF24L01_Read_Buf_DMA( RD_RX_PLOAD, rxbuf, l_RxLength);  //接收到数据
+        NRF24L01_Write_Reg_DMA( FLUSH_RX, 0xff);                //清除RX FIFO
+        return l_RxLength;
+    }
+
+    return 0;               //没有收到数据
+}
 /**
  * @brief :RF24L01引脚初始化
  * @param :无
@@ -960,8 +1010,8 @@ uint8_t NRF24L01_RxPacket(uint8_t *rxbuf)
 void NRF24L01_Gpio_Init(void)
 {
 
-    HAL_GPIO_WritePin(GPIOB , GPIO_PIN_0 , GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOA , GPIO_PIN_4 , GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
     RF24L01_SET_CE_LOW();      //??24L01
     RF24L01_SET_CS_HIGH();     //??SPI??
@@ -982,8 +1032,8 @@ void RF24L01_Init(void)
     NRF24L01_Clear_IRQ_Flag( IRQ_ALL);
 #if DYNAMIC_PACKET == 1
 
-    NRF24L01_Write_Reg( DYNPD , (1 << 0));    //使能通道1动态数据长度
-    NRF24L01_Write_Reg( FEATRUE , 0x07);
+    NRF24L01_Write_Reg( DYNPD, (1 << 0));    //使能通道1动态数据长度
+    NRF24L01_Write_Reg( FEATRUE, 0x07);
     NRF24L01_Read_Reg( DYNPD);
     NRF24L01_Read_Reg( FEATRUE);
 
@@ -993,18 +1043,18 @@ void RF24L01_Init(void)
 
 #endif  //DYNAMIC_PACKET
 
-    NRF24L01_Write_Reg( CONFIG , /*( 1<<MASK_RX_DR ) |*/     //接收中断
+    NRF24L01_Write_Reg( CONFIG, /*( 1<<MASK_RX_DR ) |*/     //接收中断
             (1 << EN_CRC) |     //使能CRC 1个字节
                     (1 << PWR_UP));    //开启设备
-    NRF24L01_Write_Reg( EN_AA , (1 << ENAA_P0));          //通道0自动应答
-    NRF24L01_Write_Reg( EN_RXADDR , (1 << ERX_P0));       //通道0接收
-    NRF24L01_Write_Reg( SETUP_AW , AW_5BYTES);              //地址宽度 5个字节
-    NRF24L01_Write_Reg( SETUP_RETR , ARD_4000US | ( REPEAT_CNT & 0x0F));            //重复等待时间 250us
-    NRF24L01_Write_Reg( RF_CH , 60);                        //初始化通道
-    NRF24L01_Write_Reg( RF_SETUP , 0x26);
+    NRF24L01_Write_Reg( EN_AA, (1 << ENAA_P0));          //通道0自动应答
+    NRF24L01_Write_Reg( EN_RXADDR, (1 << ERX_P0));       //通道0接收
+    NRF24L01_Write_Reg( SETUP_AW, AW_5BYTES);              //地址宽度 5个字节
+    NRF24L01_Write_Reg( SETUP_RETR, ARD_4000US | ( REPEAT_CNT & 0x0F)); //重复等待时间 250us
+    NRF24L01_Write_Reg( RF_CH, 60);                        //初始化通道
+    NRF24L01_Write_Reg( RF_SETUP, 0x26);
 
-    NRF24L01_Set_TxAddr(&addr[0] , 5);                      //设置TX地址
-    NRF24L01_Set_RxAddr(0 , &addr[0] , 5);                   //设置RX地址
+    NRF24L01_Set_TxAddr(&addr[0], 5);                      //设置TX地址
+    NRF24L01_Set_RxAddr(0, &addr[0], 5);                   //设置RX地址
 
 //    NRF24L01_Set_Speed(SPEED_1M);
 //    NRF24L01_Set_Power(POWER_F18DBM);
@@ -1025,31 +1075,31 @@ void RF24L01_Init_DMA(void)
     NRF24L01_Clear_IRQ_Flag(IRQ_ALL);
 
     // 批量配置寄存器结构体
-    typedef struct {
+    typedef struct
+    {
         uint8_t reg;
         uint8_t val;
     } reg_config_t;
 
     // 寄存器配置数组
     static const reg_config_t init_config[] = {
-    #if DYNAMIC_PACKET == 1
-        {DYNPD, (1 << 0)},      // 使能通道1动态数据长度
-        {FEATRUE, 0x07},
-    #elif DYNAMIC_PACKET == 0
+#if DYNAMIC_PACKET == 1
+            { DYNPD, (1 << 0) },      // 使能通道1动态数据长度
+            { FEATRUE, 0x07 },
+#elif DYNAMIC_PACKET == 0
         {RX_PW_P0, FIXED_PACKET_LEN}, // 固定数据长度
     #endif
-        {CONFIG, (1 << EN_CRC) | (1 << PWR_UP)},
-        {EN_AA, (1 << ENAA_P0)},
-        {EN_RXADDR, (1 << ERX_P0)},
-        {SETUP_AW, AW_5BYTES},
-        {SETUP_RETR, ARD_4000US | (REPEAT_CNT & 0x0F)},
-        {RF_CH, 60},
-        {RF_SETUP, 0x26}
-    };
+            { CONFIG, (1 << EN_CRC) | (1 << PWR_UP) },
+            { EN_AA, (1 << ENAA_P0) }, { EN_RXADDR, (1 << ERX_P0) }, { SETUP_AW,
+                    AW_5BYTES },
+            { SETUP_RETR, ARD_4000US | (REPEAT_CNT & 0x0F) }, { RF_CH, 60 }, {
+                    RF_SETUP, 0x26 } };
 
     // 使用DMA批量写入寄存器配置
-    for (int i = 0; i < sizeof(init_config)/sizeof(init_config[0]); i++) {
-        uint8_t tx_buf[2] = {NRF_WRITE_REG | init_config[i].reg, init_config[i].val};
+    for (int i = 0; i < sizeof(init_config) / sizeof(init_config[0]); i++)
+    {
+        uint8_t tx_buf[2] = { NRF_WRITE_REG | init_config[i].reg,
+                init_config[i].val };
 
         RF24L01_SET_CS_LOW();
         HAL_SPI_Transmit_DMA(&hspi1, tx_buf, 2);
@@ -1057,7 +1107,8 @@ void RF24L01_Init_DMA(void)
         RF24L01_SET_CS_HIGH();
 
         // 添加必要的延时(某些寄存器写入后需要稳定时间)
-        if(init_config[i].reg == CONFIG || init_config[i].reg == RF_SETUP) {
+        if (init_config[i].reg == CONFIG || init_config[i].reg == RF_SETUP)
+        {
             HAL_Delay(1);
         }
     }
