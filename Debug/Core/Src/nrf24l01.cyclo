@@ -36,6 +36,6 @@
 ../Core/Src/nrf24l01.c:863:9:NRF24L01_TxPacket_DMA	6
 ../Core/Src/nrf24l01.c:928:9:NRF24L01_RxPacket	4
 ../Core/Src/nrf24l01.c:969:9:NRF24L01_RxPacket_DMA	4
-../Core/Src/nrf24l01.c:1010:6:NRF24L01_Gpio_Init	1
-../Core/Src/nrf24l01.c:1027:6:RF24L01_Init	1
-../Core/Src/nrf24l01.c:1069:6:RF24L01_Init_DMA	5
+../Core/Src/nrf24l01.c:1009:6:NRF24L01_Gpio_Init	1
+../Core/Src/nrf24l01.c:1026:6:RF24L01_Init	1
+../Core/Src/nrf24l01.c:1068:6:RF24L01_Init_DMA	5

@@ -979,14 +979,13 @@ uint8_t NRF24L01_RxPacket_DMA(uint8_t *rxbuf)
     // 等待传输完成或超时
         while (RF24L01_GET_IRQ_STATUS() != 0)
         {
-            if (HAL_GetTick() - start_time > 100)  // 500ms超时
+            if (HAL_GetTick() - start_time > 200)  // 500ms超时
             {
                 NRF24L01_Gpio_Init();
                 RF24L01_Init_DMA();
                 RF24L01_Set_Mode_DMA(MODE_RX);
                 break;
             }
-
         }
 
     l_Status = NRF24L01_Read_Reg_DMA( STATUS);     //读状态寄存器

@@ -2,6 +2,7 @@
 "./Core/Src/dma.o"
 "./Core/Src/gpio.o"
 "./Core/Src/i2c.o"
+"./Core/Src/key.o"
 "./Core/Src/main.o"
 "./Core/Src/nrf24l01.o"
 "./Core/Src/spi.o"
