@@ -1,5 +1,24 @@
-Load "template\\template.axf" 
-_____^
-*** error 56: cannot open file
-Error: Flash Download failed  -  Could not load file 'template\template.axf'
-Flash Load finished at 00:14:17
+*** Warning: The configured compiler version '5.06 update 7 (build 960)' does not support the selected User Based Licensing technology.
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'F:\KEIL\Keil_v5\ARM\ARMCC\Bin'
+Build target 'template'
+Note: source file '../Core/Src/system_stm32f1xx.c' - object file renamed from 'template\system_stm32f1xx.o' to 'template\system_stm32f1xx_1.o'.compiling sysmem.c...
+..\Core\Src\sysmem.c(30): error:  #20: identifier "NULL" is undefined
+  static uint8_t *__sbrk_heap_end = NULL;
+..\Core\Src\sysmem.c(53): error:  #20: identifier "ptrdiff_t" is undefined
+  void *_sbrk(ptrdiff_t incr)
+..\Core\Src\sysmem.c: 0 warnings, 2 errors
+compiling main.c...
+../Core/Src/main.c(136): warning:  #175-D: subscript out of range
+              filtered_values[4]=key[0];
+../Core/Src/main.c(138): warning:  #175-D: subscript out of range
+                      filtered_values[3] , filtered_values[4], filtered_values[2]);
+../Core/Src/main.c(141): warning:  #175-D: subscript out of range
+              sprintf(remode2 , "%d,%d %d" , filtered_values[2] , filtered_values[3],filtered_values[4] );
+../Core/Src/main.c(253): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "char *"
+                OLED_ShowString(0 , 3 , g_RF24L01RxBuffer , 12 , 0);
+../Core/Src/main.c(282): warning:  #188-D: enumerated type mixed with another type
+              HAL_GPIO_WritePin(GPIOC , GPIO_PIN_13 , 0);
+../Core/Src/main.c: 5 warnings, 0 errors
+"template\template.axf" - 2 Error(s), 5 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:02

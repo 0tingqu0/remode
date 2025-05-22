@@ -57,6 +57,12 @@ char data_ready = 0;
 uint8_t g_TxMode = 0, g_UartRxFlag = 0;
 uint8_t g_UartRxBuffer[32] = { 0 };
 uint8_t g_RF24L01RxBuffer[32] = { 0 };
+// 定义3个不同的缓冲区用于存储接收数据
+uint8_t g_RF24L01RxBuffer1[32] = { 0 };
+uint8_t g_RF24L01RxBuffer2[32] = { 0 };
+uint8_t g_RF24L01RxBuffer3[32] = { 0 };
+uint8_t current_buffer = 1; // 当前使用的缓冲区编号(1-3)
+uint8_t refresh_flag = 0;   // 数据刷新标志
 uint8_t ADC_State = 0;
 uint8_t conversion = 0; // nrf24l01转换标志
 uint8_t TX_Errow = 0;
@@ -68,7 +74,7 @@ volatile uint8_t timerflag = 0;
 extern volatile uint32_t clean;
 extern uint8_t key1_state, key2_state , key3_state, key4_state ;
 extern uint8_t key1, key2 , key3, key4;
-extern uint8_t key[0];
+extern uint8_t key[];
 typedef struct
 {
     uint16_t buffer[FILTER_WINDOW];
@@ -217,21 +223,21 @@ int main(void)
     {
         HAL_ADC_Start_DMA(&hadc1 , (uint32_t*) adc_raw , ADC_CHANNELS);
         key_scan();
-        if (timerflag >= 1)
+        if (timerflag >= 2)
         {
             if ((NRF24L01_TxPacket_DMA((uint8_t*) tx_buffer , strlen(tx_buffer)) == TX_OK))
             {
-
             }
             else
             {
-                if (clean >= 18)
+                if (clean >= 18)// oled页面刷新18次后显示
                 {
                     TX_Errow++;
+                    
                 }
                 else
                     TX_Errow = 0;
-                if (TX_Errow >= 3)
+                if (TX_Errow >= 1)
                 {
 //                    HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
                     memset(g_RF24L01RxBuffer , 0 , sizeof(g_RF24L01RxBuffer)); // 清空接收缓冲区
@@ -243,17 +249,53 @@ int main(void)
         }
         if (clean >= 18 && conversion == 1)
         {
-            HAL_GPIO_TogglePin(GPIOC , GPIO_PIN_13);
-//            memset(g_RF24L01RxBuffer , 0 , sizeof(g_RF24L01RxBuffer)); // 清空接收缓冲区
+            uint32_t timeout = 50000; // 设置超时计数
+            uint8_t rx_status = 0;
+            
+            /* 切换LED状态，指示接收状态 */
+            HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+            
+            /* 切换到接收模式 */
             RF24L01_Set_Mode_DMA(MODE_RX);
-            while (NRF24L01_RxPacket_DMA(g_RF24L01RxBuffer)==0); // 接收字节
-            OLED_ShowString(0 , 2 , g_RF24L01RxBuffer , 12 , 0);
-
-            RF24L01_Set_Mode_DMA(MODE_TX); // 发送模式
-//            memset(g_RF24L01RxBuffer , 0 , sizeof(g_RF24L01RxBuffer)); // 清空接收缓冲区
-//            OLED_Clear();
-
-            conversion = 0;
+            
+            /* 等待接收数据，添加超时机制 */
+            while ((rx_status = NRF24L01_RxPacket_DMA(g_RF24L01RxBuffer)) == 0)
+            {
+                timeout--;
+                if (timeout == 0)
+                {
+                    /* 超时处理 */
+                    OLED_ShowString(0, 6, "RX Timeout", 12, 0);
+                    break;
+                }
+            }
+            
+            /* 如果成功接收数据 */
+            if (rx_status != 0 && timeout > 0)
+            {
+                /* 根据数据类型显示在不同位置 */
+                if (g_RF24L01RxBuffer[0] == '1')
+                {
+                    OLED_ShowString(0, 3, g_RF24L01RxBuffer, 12, 0);
+                }
+                else if (g_RF24L01RxBuffer[0] == '2')
+                {
+                    OLED_ShowString(0, 4, g_RF24L01RxBuffer, 12, 0);
+                }
+                else if (g_RF24L01RxBuffer[0] == '3')
+                {
+                    OLED_ShowString(0, 5, g_RF24L01RxBuffer, 12, 0);
+                }
+//                else
+//                {
+//                    /* 默认显示在第3行 */
+//                    OLED_ShowString(0, 3, g_RF24L01RxBuffer, 12, 0);
+//                }
+            }
+            
+            /* 切回发送模式 */
+            RF24L01_Set_Mode_DMA(MODE_TX);
+            conversion = 0; // 清除转换标志
         }
         OLED_ShowString(0 , 0 , remode1 , 12 , 0);
         OLED_ShowString(64 , 0 , remode2 , 12 , 0);

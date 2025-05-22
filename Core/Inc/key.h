@@ -11,6 +11,10 @@
 #include "main.h"
 #include "gpio.h"
 
+/* 外部变量声明 */
+extern uint8_t refresh_flag;    // 数据刷新标志
+extern uint8_t current_buffer;  // 当前使用的缓冲区编号
+
 void key_scan(void);
 
 #endif /* INC_KEY_H_ */

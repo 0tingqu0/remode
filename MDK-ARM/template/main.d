@@ -44,3 +44,4 @@ template\main.o: F:\KEIL\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 template\main.o: F:\KEIL\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 template\main.o: F:\KEIL\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 template\main.o: ../Core/Inc/nrf24l01.h
+template\main.o: ../Core/Inc/key.h
