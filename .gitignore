@@ -1,0 +1,27 @@
+# STM32 Keil MDK Build Artifacts
+MDK-ARM/**/*.o
+MDK-ARM/**/*.d
+MDK-ARM/**/*.crf
+MDK-ARM/**/*.dep
+MDK-ARM/**/*.hex
+MDK-ARM/**/*.bin
+MDK-ARM/**/*.axf
+MDK-ARM/**/*.map
+MDK-ARM/**/*.lst
+MDK-ARM/**/*.uvguix*
+MDK-ARM/**/*.bak
+MDK-ARM/RTE/
+Debug/
+Release/
+
+# IDE files
+.vscode/
+.settings/
+.cproject
+.project
+.mxproject
+
+# Others
+*.swp
+*.swo
+*~
